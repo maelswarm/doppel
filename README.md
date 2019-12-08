@@ -11,7 +11,7 @@ AKA. NOT PRODUTION READY
 
 ## Technologies Used
 
-Doppel.js - Express.js like HTTP2 Web Framework
+Doppel - Express.js like HTTP2 Web Framework
 
 Gulp - <a href="https://gulpjs.com/">https://gulpjs.com/</a>
 
