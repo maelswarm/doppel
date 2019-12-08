@@ -16,3 +16,23 @@ Web Framework: Doppel.js (Express.js like HTTP2 framework)
 Gulp - <a href="https://gulpjs.com/">https://gulpjs.com/</a>
 
 Sass - <a href="https://sass-lang.com/">https://sass-lang.com/</a>
+
+
+# Install
+
+```
+npm i -g gulp
+```
+
+```
+npm i
+```
+
+```
+npm run generate:ssl
+```
+Default paths for key and crt are ``` app/keys/ ```
+
+```
+npm run start
+```

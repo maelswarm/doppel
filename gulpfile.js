@@ -6,7 +6,33 @@ const htmlmin = require('gulp-htmlmin');
 const cleanCSS = require('gulp-clean-css');
 const nodemon = require('gulp-nodemon');
 
+const fs = require('fs');
+
 sass.compiler = require('node-sass');
+
+const gulpIt = () => {
+    gulp
+        .src('app/src/*.js')
+        .pipe(minify({
+            ext: {
+                src: "-orig.js",
+                min: ".js"
+            }
+        }))
+        .pipe(gulp.dest('app/dist'));
+
+    gulp.src('app/src/*.scss')
+        .pipe(sourcemaps.init())
+        .pipe(sass().on('error', sass.logError))
+        .pipe(cleanCSS())
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest('app/dist'));
+
+    gulp
+        .src('app/src/*.html')
+        .pipe(htmlmin({ collapseWhitespace: true }))
+        .pipe(gulp.dest('app/dist'));
+}
 
 gulp.task('default', function (cb) {
 
@@ -20,31 +46,22 @@ gulp.task('default', function (cb) {
         // to avoid nodemon being started multiple times
         // thanks @matthisk
         if (!started) {
+            const folders = [
+                'app/dist',
+                'app/assets'
+            ];
+
+            folders.forEach(dir => {
+                if (!fs.existsSync(dir)) {
+                    fs.mkdirSync(dir);
+                    console.log('📁 created:', dir);
+                }
+            });
+            gulpIt();
             cb();
             started = true;
         }
     }).on('restart', function () {
-        console.log('restarted!');
-        gulp
-            .src('app/src/*.js')
-            .pipe(minify({
-                ext: {
-                    src: "-orig.js",
-                    min: ".js"
-                }
-            }))
-            .pipe(gulp.dest('a/dist'));
-
-        gulp.src('app/src/*.scss')
-            .pipe(sourcemaps.init())
-            .pipe(sass().on('error', sass.logError))
-            // .pipe(cleanCSS())
-            .pipe(sourcemaps.write('.'))
-            .pipe(gulp.dest('a/dist'));
-
-        gulp
-            .src('app/src/*.html')
-            .pipe(htmlmin({ collapseWhitespace: true }))
-            .pipe(gulp.dest('a/dist'));
+        gulpIt();
     });
 });

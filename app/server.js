@@ -1,6 +1,6 @@
 const cluster = require('cluster');
 const numCPUs = require("os").cpus().length;
-const Doppel = require('./doppel.js.js');
+const Doppel = require('./doppel.js');
 const app = new Doppel({ "http2": true, "http": true, key: __dirname + '/keys/priv.key', cert: __dirname + '/keys/cert.crt' });
 
 app.get("/.*", (req, res) => {
