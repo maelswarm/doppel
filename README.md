@@ -5,7 +5,7 @@ Leverage your website with Doppel.
 <p align="center">
 <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/2f/Painting_by_Sebastian_Bieniek._Titled_%E2%80%9EDoppelg%C3%A4nger_No._1%E2%80%9C%2C_2018._Oil_on_canvas._Berlin_based_artist._Painter.jpg/453px-Painting_by_Sebastian_Bieniek._Titled_%E2%80%9EDoppelg%C3%A4nger_No._1%E2%80%9C%2C_2018._Oil_on_canvas._Berlin_based_artist._Painter.jpg"></img></p>
 
-This project and Doppel.js (especially) are in development.
+This example project and Doppel (especially) are in development.
 
 AKA. NOT PRODUTION READY
 
