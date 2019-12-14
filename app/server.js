@@ -46,13 +46,6 @@ app.get("/.*\\.css.map", (req, res) => {
     });
 });
 
-app.get("/bootstrap.js", (req, res) => {
-    res.sendFile(__dirname + "/../node_modules/bootstrap/dist/js/bootstrap.min.js", {
-        ":status": 200,
-        "content-type": "application/javascript; charset=utf-8"
-    });
-});
-
 if (cluster.isMaster) {
     console.log(`Master ${process.pid} is running`);
 
