@@ -1,6 +1,7 @@
 const http = require("http");
 const http2 = require("http2");
 const fs = require("fs");
+const path = require('path');
 const HTTP2_KEYS = Object.keys(http2.constants);
 const HTTP2_VALUES = Object.values(http2.constants);
 const {
@@ -13,6 +14,7 @@ const {
     NGHTTP2_CANCEL
 } = http2.constants;
 let decodeURI = true;
+let autoPush = true;
 const defaultHeaders = {
     ":status": 200,
     "content-type": "*/*; charset=utf-8"
@@ -83,16 +85,29 @@ function Response(stream) {
         this.send = (data, headers) => {
             headers = headers ? headers : defaultHeaders;
             headers = setExpiration(headers);
-            //console.log((new Date()).getTime() + ' Pre reponse');
             stream.respond(headers);
-            //console.log((new Date()).getTime() + ' Post response Pre end');
             stream.end(data);
-            //console.log((new Date()).getTime() + ' Post end');
         };
         this.sendFile = (filepath, headers) => {
             headers = headers ? headers : defaultHeaders;
             headers = setExpiration(headers);
-            stream.respondWithFile(filepath, headers);
+            if (autoPush && headers['content-type'].indexOf('html') > -1) {
+                console.log(filepath);
+                fs.readFile(filepath, (err, res) => {
+                    let arr = res.toString();
+                    arr = arr.match(/(href\=\"[A-Za-z0-9\_\\/.\-]*)|(src\=\"[A-Za-z0-9\_\\/.\-]*)/g);
+                    console.log(arr);
+                    arr = arr.map((val) => {
+                        return path.parse(val.substring(val.indexOf('"') + 1));
+                    });
+                    arr.forEach((x) => {
+                        this.pushFile(x.dir + '/' + x.base, __dirname + x.dir + '/' + x.base, defaultHeaders)
+                    });
+                    stream.respondWithFile(filepath, headers);
+                });
+            } else {
+                stream.respondWithFile(filepath, headers); 
+            }
         };
         this.pushFile = (route, filepath, headers) => {
             stream.pushStream({ ":path": route }, (err, pushStream) => {
@@ -135,6 +150,7 @@ function Doppel(options) {
     this.cert = options.cert ? fs.readFileSync(options.cert, "utf8") : undefined;
     this.ca = options.ca ? fs.readFileSync(options.ca, "utf8") : undefined;
     this.allowHTTP1 = options.allowHTTP1 || true;
+    autoPush = options.autoPush || false;
     decodeURI = options.decodeURI || true;
 }
 
@@ -160,7 +176,6 @@ let execRoute = (route, i, req, res) => {
     }
 };
 let determineRoute = (routes, headers, data, path, stream) => {
-    //console.log((new Date()).getTime() + ' ' + path);
     const list = routes[headers[HTTP2_HEADER_METHOD]];
     const keys = Object.keys(list);
     let route = undefined;
@@ -213,7 +228,6 @@ Doppel.prototype.start = function (host, port) {
             req.setEncoding('utf8');
             let headers = req.headers;
             let stream = req.stream;
-            //console.log(req.headers);
             let path;
             let data = "";
             if (req.httpVersion !== '2.0') {
@@ -232,7 +246,6 @@ Doppel.prototype.start = function (host, port) {
                     headers[HTTP2_HEADER_PATH]
                 );
                 stream.on('readable', () => {
-                    console.log("HERE");
                     let chunk;
                     if (headers[HTTP2_HEADER_METHOD] !== 'GET' && !parseInt(headers[HTTP2_HEADER_CONTENT_LENGTH])) {
                         determineRoute(routes, headers, data, path, stream);
@@ -267,6 +280,7 @@ Doppel.prototype.start = function (host, port) {
                         file = fs.readFileSync('.' + req.url, 'utf8');
                     } catch {
                         res.end();
+                        return;
                     }
                     res.setHeader('Content-type', 'text/plain');
                     res.end(file);
