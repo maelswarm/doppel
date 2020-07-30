@@ -19,6 +19,8 @@ Gulp - <a href="https://gulpjs.com/">https://gulpjs.com/</a>
 
 Sass - <a href="https://sass-lang.com/">https://sass-lang.com/</a>
 
+MongoDB - <a href="https://mongodb.com/">https://mongodb.com/</a>
+
 
 # Install
 
@@ -33,10 +35,17 @@ npm i
 ```
 npm run generate:ssl
 ```
-Default paths for key and crt are ``` app/keys/ ```
 
+
+Non-Windows Environments
 ```
 npm run start
+```
+
+
+Windows Environments
+```
+npm run start:windows
 ```
 
 # Doppel Usage
@@ -54,17 +63,4 @@ key:        string (path)
 cert:       string (path)
 ca:         string (path)
 allowHTTP1: boolean - default true;
-```
-
-```
-Doppel.prototype.start(host: string, port: number)
-```
-
-```
-Doppel.prototype.get(path:string, ..., cb: Function)
-Doppel.prototype.post(path:string, ..., cb: Function)
-Doppel.prototype.put(path:string, ..., cb: Function)
-Doppel.prototype.delete(path:string, ..., cb: Function)
-
-All HTTP2_METHODS may be used.
 ```

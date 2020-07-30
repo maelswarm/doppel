@@ -12,7 +12,7 @@ sass.compiler = require('node-sass');
 
 const gulpIt = () => {
     gulp
-        .src('app/src/*.js')
+        .src('app/src/**/*.js')
         .pipe(minify({
             ext: {
                 src: "-orig.js",
@@ -21,7 +21,7 @@ const gulpIt = () => {
         }))
         .pipe(gulp.dest('app/dist'));
 
-    gulp.src('app/src/*.scss')
+    gulp.src('app/src/**/*.scss')
         .pipe(sourcemaps.init())
         .pipe(sass().on('error', sass.logError))
         .pipe(cleanCSS())
@@ -29,7 +29,7 @@ const gulpIt = () => {
         .pipe(gulp.dest('app/dist'));
 
     gulp
-        .src('app/src/*.html')
+        .src('app/src/**/*.html')
         .pipe(htmlmin({ collapseWhitespace: true }))
         .pipe(gulp.dest('app/dist'));
 }
@@ -39,16 +39,15 @@ gulp.task('default', function (cb) {
     var started = false;
 
     return nodemon({
-        script: 'app/server.js',
-        watch: 'app/src',
+        script: './app/server/server.js',
+        watch: './app/src',
         ext: 'js html scss'
     }).on('start', function () {
         // to avoid nodemon being started multiple times
         // thanks @matthisk
         if (!started) {
             const folders = [
-                'app/dist',
-                'app/assets'
+                'app/dist'
             ];
 
             folders.forEach(dir => {
@@ -58,9 +57,10 @@ gulp.task('default', function (cb) {
                 }
             });
             gulpIt();
-            cb();
             started = true;
+            cb();
         }
+        cb();
     }).on('restart', function () {
         gulpIt();
     });
