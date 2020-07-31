@@ -101,6 +101,9 @@ dist
 # DynamoDB Local files
 .dynamodb/
 
+# Keys
+app/server/keys/*
+
 # TernJS port file
 .tern-port
 © 2019 GitHub, Inc.
